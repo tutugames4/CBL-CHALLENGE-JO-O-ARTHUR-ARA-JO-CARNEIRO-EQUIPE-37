@@ -1,20 +1,20 @@
 import Foundation
 import CryptoKit
 
-// Estrutura para armazenar as senhas
+
 struct PasswordEntry: Codable {
     var service: String
     var encryptedPassword: String
 }
 
-// Função para criptografar a senha
+
 func encryptPassword(_ password: String, key: SymmetricKey) -> String {
     let data = Data(password.utf8)
     let sealedBox = try! AES.GCM.seal(data, using: key)
     return sealedBox.combined!.base64EncodedString()
 }
 
-// Função para descriptografar a senha
+
 func decryptPassword(_ encryptedPassword: String, key: SymmetricKey) -> String {
     let data = Data(base64Encoded: encryptedPassword)!
     let sealedBox = try! AES.GCM.SealedBox(combined: data)
@@ -22,7 +22,7 @@ func decryptPassword(_ encryptedPassword: String, key: SymmetricKey) -> String {
     return String(data: decryptedData, encoding: .utf8)!
 }
 
-// Função para carregar as senhas de um arquivo JSON
+
 func loadPasswords(from file: String, key: SymmetricKey) -> [PasswordEntry]? {
     if let data = try? Data(contentsOf: URL(fileURLWithPath: file)) {
         let decoder = JSONDecoder()
@@ -36,7 +36,7 @@ func loadPasswords(from file: String, key: SymmetricKey) -> [PasswordEntry]? {
     return nil
 }
 
-// Função para salvar as senhas em um arquivo JSON
+
 func savePasswords(_ passwords: [PasswordEntry], to file: String, key: SymmetricKey) {
     let encoder = JSONEncoder()
     let entries = passwords.map { entry in
@@ -49,7 +49,7 @@ func savePasswords(_ passwords: [PasswordEntry], to file: String, key: Symmetric
     }
 }
 
-// Função para buscar uma senha
+
 func searchPassword(service: String, passwords: [PasswordEntry]) -> String? {
     if let entry = passwords.first(where: { $0.service.lowercased() == service.lowercased() }) {
         return entry.encryptedPassword
@@ -57,7 +57,7 @@ func searchPassword(service: String, passwords: [PasswordEntry]) -> String? {
     return nil
 }
 
-// Função para adicionar uma nova senha
+
 func addPassword(service: String, password: String, passwords: [PasswordEntry], key: SymmetricKey) -> [PasswordEntry] {
     let newEntry = PasswordEntry(service: service, encryptedPassword: password)
     var newPasswords = passwords
@@ -65,7 +65,7 @@ func addPassword(service: String, password: String, passwords: [PasswordEntry], 
     return newPasswords
 }
 
-// Função para excluir uma senha
+
 func deletePassword(service: String, passwords: [PasswordEntry]) -> [PasswordEntry]? {
     var newPasswords = passwords
     if let index = newPasswords.firstIndex(where: { $0.service.lowercased() == service.lowercased() }) {
@@ -75,7 +75,7 @@ func deletePassword(service: String, passwords: [PasswordEntry]) -> [PasswordEnt
     return nil
 }
 
-// Função para exibir o menu de opções
+
 func displayMenu() {
     print("Gerenciador de Senhas - CLI")
     print("1. Adicionar senha")
